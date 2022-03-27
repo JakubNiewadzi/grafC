@@ -11,14 +11,12 @@ double losuj(double min, double max) {
 
 void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
   
-  int aktualnyWierzcholek, sasiad, iloscSasiadow, czyDoPliku;
+  int aktualnyWierzcholek, sasiad, iloscSasiadow;
   double wagaMinimalna, wagaMaxymalna, waga;
   FILE *p = fopen (plik, "w");
 
   if(p == NULL) {
-    czyDoPliku = 0;
-  } else {
-    czyDoPliku = 1;
+    p = stdout;
   }
 
   if(g->wagaMax == 0) {
@@ -29,9 +27,7 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
     wagaMinimalna = g->wagaMin;
   }
 
-  if(czyDoPliku == 1) {
-    fprintf(p,"%d %d\n", g->kolumny, g->wiersze);
-  }
+  fprintf(p,"%d %d\n", g->kolumny, g->wiersze);
 
   g->macierzSasiedztwa = malloc(g->kolumny * g->wiersze * sizeof *g->macierzSasiedztwa);
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
@@ -63,8 +59,9 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
 
     sasiad = aktualnyWierzcholek - 1;
 
-    printf("Wierzchołek %d ma sąsiadów z wagami:\n\t", aktualnyWierzcholek);
+    /*printf("Wierzchołek %d ma sąsiadów z wagami:\n\t", aktualnyWierzcholek);*/
 
+    
     if(sasiad >= 0 && sasiad < g->kolumny * g->wiersze && aktualnyWierzcholek % g->wiersze != 0) {
       t->sasiedzi [aktualnyWierzcholek] ++;
 
@@ -76,12 +73,11 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
 
       g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
 
-      printf("%d :%lf ", sasiad, waga);
+      /*printf("\tt->grafBFS [%d] [%d] = %d\n", aktualnyWierzcholek, iloscSasiadow, sasiad);*/
 
-      if(czyDoPliku == 1) {
-        fprintf(p,"%d :%lf\t", sasiad, waga);
-      }
+      fprintf(p,"%d :%lf   ", sasiad, waga);
     }
+  
 
     sasiad = aktualnyWierzcholek + g->wiersze;
 
@@ -96,12 +92,11 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
 
       g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
 
-      printf("%d :%lf ", sasiad, waga);
+      /*printf("\tt->grafBFS [%d] [%d] = %d\n", aktualnyWierzcholek, iloscSasiadow, sasiad);*/
 
-      if(czyDoPliku == 1) {
-        fprintf(p,"%d :%lf\t", sasiad, waga);
-      }
+      fprintf(p,"%d :%lf   ", sasiad, waga);
     }
+
 
     sasiad = aktualnyWierzcholek + 1;
 
@@ -116,15 +111,14 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
 
       g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
 
-      printf("%d :%lf ", sasiad, waga);
+      /*printf("\tt->grafBFS [%d] [%d] = %d\n", aktualnyWierzcholek, iloscSasiadow, sasiad);*/
 
-      if(czyDoPliku == 1) {
-        fprintf(p,"%d :%lf\t", sasiad, waga);
-      }
+      fprintf(p,"%d :%lf   ", sasiad, waga);
     }
 
-    sasiad = aktualnyWierzcholek - g->wiersze;
 
+    sasiad = aktualnyWierzcholek - g->wiersze;
+    
     if(sasiad >= 0 && sasiad < g->kolumny * g->wiersze) {
       t->sasiedzi [aktualnyWierzcholek] ++;
 
@@ -136,19 +130,18 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
 
       g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
 
-      printf("%d :%lf ", sasiad, waga);
+      /*printf("\tt->grafBFS [%d] [%d] = %d\n", aktualnyWierzcholek, iloscSasiadow, sasiad);*/
 
-      if(czyDoPliku == 1) {
-        fprintf(p,"%d :%lf\t", sasiad, waga);
-      }
+      fprintf(p,"%d :%lf   ", sasiad, waga);
     }
+
 
     aktualnyWierzcholek++;
 
-    if(czyDoPliku == 1) {
-      fprintf(p, "\n");
-    }
+    fprintf(p, "\n");
 
-    printf("\n\tIlość sąsiadów %d\n\n", t->sasiedzi[aktualnyWierzcholek-1]);
+    /*printf("\n\tIlość sąsiadów %d\n\n", t->sasiedzi[aktualnyWierzcholek-1]);*/
   }
+
+  t->iloscWezlow = aktualnyWierzcholek++;
 }

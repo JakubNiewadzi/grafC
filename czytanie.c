@@ -95,7 +95,7 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
       licznikSasiadow ++;
       licznikSasiadow = licznikSasiadow / 2;
       t->sasiedzi [aktualnyWezel] = licznikSasiadow;
-      /* printf("aktualny wezeł %d ma %d sąsiadów\n", aktualnyWezel, g->sasiedzi [aktualnyWezel]); */
+      /*printf("aktualny wezeł %d ma %d sąsiadów\n", aktualnyWezel, g->sasiedzi [aktualnyWezel]); */
       aktualnyWezel++;
       licznikSasiadow = 0;
     }
@@ -103,22 +103,35 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
     poprzedniZnak = c;
   }
 
+  /*
+  for(int i = 0; i < 9; i++) {
+    printf("liczba sasiadów dla wierzchołka %d = %d\n", i, t->sasiedzi [i]);
+  }
+  */
+  
   aktualnyWezel = 0;
   licznikSasiadow = 0;
 
   while(fscanf(p,"%d :%lf", &aktualnySasiad, &waga) == 2) {    /* główna pętla zapisująca odpowiednie dane w tablicach grafD i grafBFS */
 
-    licznikSasiadow ++;
 
-    if(t->sasiedzi[aktualnyWezel] < licznikSasiadow) {
+
+
+    if(t->sasiedzi[aktualnyWezel] == licznikSasiadow) {
       aktualnyWezel ++;
-      licznikSasiadow = 1;
+      licznikSasiadow = 0;
+    }
+
+    if(t->sasiedzi[aktualnyWezel] == 0) {
+      aktualnyWezel ++;
+      licznikSasiadow = 0;
     }
 
     /*
     printf("\t\taktualnyWezel = %d, aktualnySasiad = %d, waga = %lf\n", aktualnyWezel, aktualnySasiad, waga);
     printf("\t\tsasiedzi[%d] = %d, licznikSasiadow = %d\n", aktualnyWezel, t->sasiedzi[aktualnyWezel], licznikSasiadow);
     */
+    
 
     if(aktualnySasiad == aktualnyWezel - 1) {
       t->grafD [aktualnyWezel] [0] = waga;
@@ -129,8 +142,9 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
       printf("\nDla wezła %d i sąsiada %d przypisano:", aktualnyWezel, aktualnySasiad);
       printf("\n\tgrafD [%d] [0] = %lf", aktualnyWezel, t->grafD [aktualnyWezel] [0]);
       printf("\n\tgrafBFS [%d] [%d] = %d\n", aktualnyWezel, licznikSasiadow, t->grafBFS [aktualnyWezel] [licznikSasiadow]);
-      printf("\n\macierzSasiedztwa [%d] [%d] = %lf\n", aktualnyWezel, aktualnySasiad, waga);
+      printf("\n\tmacierzSasiedztwa [%d] [%d] = %lf\n", aktualnyWezel, aktualnySasiad, waga);
       */
+      
 
     } else if(aktualnySasiad == aktualnyWezel + g->wiersze) {
       t->grafD [aktualnyWezel] [1] = waga;
@@ -141,7 +155,7 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
       printf("\nDla wezła %d i sąsiada %d przypisano:", aktualnyWezel, aktualnySasiad);
       printf("\n\tgrafD [%d] [1] = %lf", aktualnyWezel, t->grafD [aktualnyWezel] [1]);
       printf("\n\tgrafBFS [%d] [%d] = %d\n", aktualnyWezel, licznikSasiadow, t->grafBFS [aktualnyWezel] [licznikSasiadow]);
-      printf("\n\macierzSasiedztwa [%d] [%d] = %lf\n", aktualnyWezel, aktualnySasiad, waga);
+      printf("\n\tmacierzSasiedztwa [%d] [%d] = %lf\n", aktualnyWezel, aktualnySasiad, waga);
       */
 
     } else if(aktualnySasiad == aktualnyWezel + 1) {
@@ -153,7 +167,7 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
       printf("\nDla wezła %d i sąsiada %d przypisano:", aktualnyWezel, aktualnySasiad);
       printf("\n\tgrafD [%d] [2] = %lf", aktualnyWezel, t->grafD [aktualnyWezel] [2]);
       printf("\n\tgrafBFS [%d] [%d] = %d\n", aktualnyWezel, licznikSasiadow, t->grafBFS [aktualnyWezel] [licznikSasiadow]);
-      printf("\n\macierzSasiedztwa [%d] [%d] = %lf\n", aktualnyWezel, aktualnySasiad, waga);
+      printf("\n\tmacierzSasiedztwa [%d] [%d] = %lf\n", aktualnyWezel, aktualnySasiad, waga);
       */
 
     } else if(aktualnySasiad == aktualnyWezel - g->wiersze) {
@@ -165,7 +179,7 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
       printf("\nDla wezła %d i sąsiada %d przypisano:", aktualnyWezel, aktualnySasiad);
       printf("\n\tgrafD [%d] [3] = %lf", aktualnyWezel, t->grafD [aktualnyWezel] [3]);
       printf("\n\tgrafBFS [%d] [%d] = %d\n", aktualnyWezel, licznikSasiadow, t->grafBFS [aktualnyWezel] [licznikSasiadow]);
-      printf("\n\macierzSasiedztwa [%d] [%d] = %lf\n", aktualnyWezel, aktualnySasiad, waga);
+      printf("\n\tmacierzSasiedztwa [%d] [%d] = %lf\n", aktualnyWezel, aktualnySasiad, waga);
       */
 
     } else {
@@ -174,12 +188,31 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
       g->macierzSasiedztwa [aktualnyWezel] [aktualnySasiad] = waga;
       /*return 1;        błąd związany z podaniem nie odpowowiednich wierzchołków jako sąsiadów*/
     }
-
+  licznikSasiadow ++;
   }
 
-  /*printf("\n"); */
+  printf("\n"); 
 
   fclose(p);
   fclose(kp);
   return 0;
 }
+
+void czyszczenieTablic(tablice_t *tablice) {
+  free(tablice->sasiedzi);
+  for(int i = 0; i < tablice->iloscWezlow; i++) {
+    free(tablice->grafBFS [i]);
+    free(tablice->grafD [i]);
+  }
+  free(tablice->grafBFS);
+  free(tablice->grafD);
+  free(tablice);
+}
+
+void czyszczenieGrafu(graf_t *graf) {
+  for(int i = 0; i < graf->kolumny * graf->wiersze; i++) {
+    free(graf->macierzSasiedztwa [i]);
+  }
+  free(graf->macierzSasiedztwa);
+  free(graf);
+} 

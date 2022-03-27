@@ -16,6 +16,7 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
   FILE *p = fopen (plik, "w");
 
   if(p == NULL) {
+    p = stdout;
     czyDoPliku = 0;
   } else {
     czyDoPliku = 1;
@@ -65,6 +66,7 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
 
     printf("Wierzchołek %d ma sąsiadów z wagami:\n\t", aktualnyWierzcholek);
 
+    
     if(sasiad >= 0 && sasiad < g->kolumny * g->wiersze && aktualnyWierzcholek % g->wiersze != 0) {
       t->sasiedzi [aktualnyWierzcholek] ++;
 
@@ -76,12 +78,13 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
 
       g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
 
-      printf("%d :%lf ", sasiad, waga);
+      printf("\tt->grafBFS [%d] [%d] = %d\n", aktualnyWierzcholek, iloscSasiadow, sasiad);
 
       if(czyDoPliku == 1) {
-        fprintf(p,"%d :%lf\t", sasiad, waga);
+        fprintf(p,"%d:%lf   ", sasiad, waga);
       }
     }
+  
 
     sasiad = aktualnyWierzcholek + g->wiersze;
 
@@ -96,12 +99,13 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
 
       g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
 
-      printf("%d :%lf ", sasiad, waga);
+      printf("\tt->grafBFS [%d] [%d] = %d\n", aktualnyWierzcholek, iloscSasiadow, sasiad);
 
       if(czyDoPliku == 1) {
-        fprintf(p,"%d :%lf\t", sasiad, waga);
+        fprintf(p,"%d :%lf  ", sasiad, waga);
       }
     }
+
 
     sasiad = aktualnyWierzcholek + 1;
 
@@ -116,15 +120,16 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
 
       g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
 
-      printf("%d :%lf ", sasiad, waga);
+      printf("\tt->grafBFS [%d] [%d] = %d\n", aktualnyWierzcholek, iloscSasiadow, sasiad);
 
       if(czyDoPliku == 1) {
-        fprintf(p,"%d :%lf\t", sasiad, waga);
+        fprintf(p,"%d :%lf  ", sasiad, waga);
       }
     }
 
-    sasiad = aktualnyWierzcholek - g->wiersze;
 
+    sasiad = aktualnyWierzcholek - g->wiersze;
+    
     if(sasiad >= 0 && sasiad < g->kolumny * g->wiersze) {
       t->sasiedzi [aktualnyWierzcholek] ++;
 
@@ -136,12 +141,13 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
 
       g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
 
-      printf("%d :%lf ", sasiad, waga);
+      printf("\tt->grafBFS [%d] [%d] = %d\n", aktualnyWierzcholek, iloscSasiadow, sasiad);
 
       if(czyDoPliku == 1) {
-        fprintf(p,"%d :%lf\t", sasiad, waga);
+        fprintf(p,"%d :%lf   ", sasiad, waga);
       }
     }
+
 
     aktualnyWierzcholek++;
 
