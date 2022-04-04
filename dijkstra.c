@@ -53,8 +53,15 @@ void dijkstra(graf_t * g, int wierz, int n, double * droga){
     }
     pocz++;
   }
+  
   for(int i =0;i<n;i++){
-    printf("Droga do wierzchołka %d wynosi %lf \n", i, droga[i]);
+    if(droga[i] == DBL_MAX) {
+      droga[i] = -1;  
+    }
   }
+  
+
+  free(kolejka);
+  free(poprzednik);
 
 }

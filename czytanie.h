@@ -12,7 +12,7 @@ typedef struct graf {
 
 typedef struct tablice {
   int **grafBFS;
-  double **grafD;
+  //double **grafD;
   int *sasiedzi;
   int iloscWezlow;
 } tablice_t;

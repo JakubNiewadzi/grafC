@@ -14,19 +14,19 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
   FILE *p = fopen (plik, "r");
 
   if(p == NULL) {
-    printf("Program nie ma dostępu do plik z którego chcesz pobrać dane na temat opisu grafu, spróbuj podać inny plik.\n");
+    printf("Program nie ma dostępu do pliku z którego chcesz pobrać dane na temat opisu grafu, spróbuj podać inny plik.\n");
     return 1;
   }
   
   FILE *kp = fopen (plik, "r");        /*plik pomocniczy do określenia ilosci punktów w wierszu */
 
 
-  if(fscanf(p,"%d %d", &(g->wiersze), &(g->kolumny)) != 2) {
+  if(fscanf(p,"%d %d", &(g->wiersze), &(g->kolumny)) != 2 && fscanf(kp,"%d %d", &(g->wiersze), &(g->kolumny))!=2) {
     printf("Nieodpowiedni format lub ilość liczb w pierwszym wierszu pliku!\nPowinny być to 2 liczby naturalne określające liczbę wierszy i kolumn grafu\n");
     return 1;        /*błąd związany z nie podaniem odpowiedniej ilości wierszy i kolumn*/
   }
 
-  fscanf(kp,"%d %d", &(g->wiersze), &(g->kolumny));
+  
 
   g->macierzSasiedztwa = malloc(g->kolumny * g->wiersze * sizeof *g->macierzSasiedztwa);
 
@@ -40,13 +40,13 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
     }
   }
 
-  t->grafD = malloc(g->kolumny * g->wiersze * sizeof *t->grafD);
+  /*t->grafD = malloc(g->kolumny * g->wiersze * sizeof *t->grafD);
 
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
     t->grafD [i] = malloc(4 * sizeof *t->grafD[i]);
   }
 
-  /* printf("Zaalokowano pamięć na grafD\n"); */
+   printf("Zaalokowano pamięć na grafD\n"); 
 
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
     for(int j = 0; j < 4; j++) {
@@ -54,7 +54,7 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
     }
   }
 
-  /* printf("Wypełniono grafD\n"); */
+   printf("Wypełniono grafD\n"); */
 
   t->grafBFS = malloc(g->kolumny * g->wiersze * sizeof *t->grafBFS);
 
@@ -85,7 +85,7 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
   while(c != EOF) {     /* przelatuje kopie pliku sprawdzajac ile jest zapisanych połączeń w jednym wierszu dodatkow wypełniając tablice sasiedzi*/
     c = fgetc(kp);
 
-    if(c == ' ') {
+    if(c == ' ' || c == '\t') {
       if(isalnum(poprzedniZnak) == 8) {
         licznikSasiadow ++;
       }
@@ -114,7 +114,10 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
 
   while(fscanf(p,"%d :%lf", &aktualnySasiad, &waga) == 2) {    /* główna pętla zapisująca odpowiednie dane w tablicach grafD i grafBFS */
 
-
+    if(aktualnySasiad>=g->wiersze*g->kolumny || aktualnySasiad<0){
+      printf("W pliku znajduje się wierzchołek, który wychodzi poza podany zakres\n");
+      return 1;
+    }
 
 
     if(t->sasiedzi[aktualnyWezel] == licznikSasiadow) {
@@ -134,7 +137,7 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
     
 
     if(aktualnySasiad == aktualnyWezel - 1) {
-      t->grafD [aktualnyWezel] [0] = waga;
+      //t->grafD [aktualnyWezel] [0] = waga;
       t->grafBFS [aktualnyWezel] [licznikSasiadow] = aktualnySasiad;
       g->macierzSasiedztwa [aktualnyWezel] [aktualnySasiad] = waga;
 
@@ -147,7 +150,7 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
       
 
     } else if(aktualnySasiad == aktualnyWezel + g->wiersze) {
-      t->grafD [aktualnyWezel] [1] = waga;
+      //t->grafD [aktualnyWezel] [1] = waga;
       t->grafBFS [aktualnyWezel] [licznikSasiadow] = aktualnySasiad;
       g->macierzSasiedztwa [aktualnyWezel] [aktualnySasiad] = waga;
 
@@ -159,7 +162,7 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
       */
 
     } else if(aktualnySasiad == aktualnyWezel + 1) {
-      t->grafD [aktualnyWezel] [2] = waga;
+      //t->grafD [aktualnyWezel] [2] = waga;
       t->grafBFS [aktualnyWezel] [licznikSasiadow] = aktualnySasiad;
       g->macierzSasiedztwa [aktualnyWezel] [aktualnySasiad] = waga;
 
@@ -171,7 +174,7 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
       */
 
     } else if(aktualnySasiad == aktualnyWezel - g->wiersze) {
-      t->grafD [aktualnyWezel] [3] = waga;
+      //t->grafD [aktualnyWezel] [3] = waga;
       t->grafBFS [aktualnyWezel] [licznikSasiadow] = aktualnySasiad;
       g->macierzSasiedztwa [aktualnyWezel] [aktualnySasiad] = waga;
 
@@ -183,7 +186,7 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
       */
 
     } else {
-      printf("Żle sformułowany plik! Węzeł nr. %d nie może sąsiadować z węzłem nr. %d!\n", aktualnyWezel, aktualnySasiad);
+      /*printf("Żle sformułowany plik! Węzeł nr. %d nie może sąsiadować z węzłem nr. %d!\n", aktualnyWezel, aktualnySasiad);*/
       t->grafBFS [aktualnyWezel] [licznikSasiadow] = aktualnySasiad;
       g->macierzSasiedztwa [aktualnyWezel] [aktualnySasiad] = waga;
       /*return 1;        błąd związany z podaniem nie odpowowiednich wierzchołków jako sąsiadów*/
@@ -191,7 +194,9 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
   licznikSasiadow ++;
   }
 
-  printf("\n"); 
+  /*printf("\n");*/
+
+  t->iloscWezlow = ++aktualnyWezel;
 
   fclose(p);
   fclose(kp);
@@ -202,10 +207,10 @@ void czyszczenieTablic(tablice_t *tablice) {
   free(tablice->sasiedzi);
   for(int i = 0; i < tablice->iloscWezlow; i++) {
     free(tablice->grafBFS [i]);
-    free(tablice->grafD [i]);
+    //free(tablice->grafD [i]);
   }
   free(tablice->grafBFS);
-  free(tablice->grafD);
+  //free(tablice->grafD);
   free(tablice);
 }
 

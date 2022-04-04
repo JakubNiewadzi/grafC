@@ -9,15 +9,15 @@ double losuj(double min, double max) {
   return min + (rand() / dzielnik);
 }
 
-void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
+void wygenerujGraf (graf_t *g, tablice_t *t, FILE *p) {
   
   int aktualnyWierzcholek, sasiad, iloscSasiadow;
   double wagaMinimalna, wagaMaxymalna, waga;
-  FILE *p = fopen (plik, "w");
 
+  /*
   if(p == NULL) {
     p = stdout;
-  }
+  } */
 
   if(g->wagaMax == 0) {
     wagaMaxymalna = 10;
@@ -40,10 +40,10 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
     }
   }
 
-  t->grafD = malloc(g->kolumny * g->wiersze * sizeof *t->grafD);
+  /*t->grafD = malloc(g->kolumny * g->wiersze * sizeof *t->grafD);
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
     t->grafD [i] = malloc(4 * sizeof *t->grafD[i]);
-  }
+  }*/
 
   t->grafBFS = malloc(g->kolumny * g->wiersze * sizeof *t->grafBFS);
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
@@ -52,8 +52,8 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
 
   t->sasiedzi = malloc(g->kolumny * g->wiersze * sizeof *t->sasiedzi);
 
-  aktualnyWierzcholek = 0;
-  while(aktualnyWierzcholek != (g->kolumny * g->wiersze)) {
+  
+  for(aktualnyWierzcholek = 0; aktualnyWierzcholek < (g->kolumny * g->wiersze); aktualnyWierzcholek++ ) {
     iloscSasiadow = 0;
     t->sasiedzi [aktualnyWierzcholek] = 0;
 
@@ -69,7 +69,7 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
       iloscSasiadow ++;
 
       waga = losuj(wagaMinimalna, wagaMaxymalna);
-      t->grafD [aktualnyWierzcholek] [0] = waga;
+      //t->F [aktualnyWierzcholek] [0] = waga;
 
       g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
 
@@ -88,7 +88,7 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
       iloscSasiadow ++;
 
       waga = losuj(wagaMinimalna, wagaMaxymalna);
-      t->grafD [aktualnyWierzcholek] [1] = waga;
+     // t->grafD [aktualnyWierzcholek] [1] = waga;
 
       g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
 
@@ -107,7 +107,7 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
       iloscSasiadow ++;
 
       waga = losuj(wagaMinimalna, wagaMaxymalna);
-      t->grafD [aktualnyWierzcholek] [2] = waga;
+      //t->grafD [aktualnyWierzcholek] [2] = waga;
 
       g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
 
@@ -126,7 +126,7 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
       iloscSasiadow ++;
 
       waga = losuj(wagaMinimalna, wagaMaxymalna);
-      t->grafD [aktualnyWierzcholek] [0] = waga;
+     // t->grafD [aktualnyWierzcholek] [0] = waga;
 
       g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
 
@@ -134,14 +134,12 @@ void wygenerujGraf (graf_t *g, tablice_t *t, char *plik) {
 
       fprintf(p,"%d :%lf   ", sasiad, waga);
     }
-
-
-    aktualnyWierzcholek++;
-
     fprintf(p, "\n");
 
     /*printf("\n\tIlość sąsiadów %d\n\n", t->sasiedzi[aktualnyWierzcholek-1]);*/
   }
 
   t->iloscWezlow = aktualnyWierzcholek++;
+  /*if( p != stdout )
+    fclose(p); */
 }

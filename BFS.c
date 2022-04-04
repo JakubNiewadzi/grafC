@@ -37,11 +37,12 @@ void BFS(int ** graf, int wierz, int n, int * ile_sasiadow, bfs_t * output){
     }
     output->kolor[u]=2;
   }
-
-  
-
   free(kolejka);
-  
-  
+}
 
-  }
+void czyszczenieBFS(bfs_t *bfs){
+  free(bfs->kolor);
+  free(bfs->rodzic);
+  free(bfs->odleglosc);
+  free(bfs);
+}

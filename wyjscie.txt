@@ -1,0 +1,26 @@
+Program grafC rozpoczyna generacje grafu o wymiarach 2 x 5.
+2 5
+5 :8.401877   1 :3.943829   
+0 :7.830992   6 :7.984400   2 :9.116474   
+1 :1.975514   7 :3.352228   3 :7.682296   
+2 :2.777747   8 :5.539700   4 :4.773971   
+3 :6.288709   9 :3.647845   
+6 :5.134009   0 :9.522297   
+5 :9.161951   7 :6.357117   1 :7.172969   
+6 :1.416026   8 :6.069689   2 :0.163006   
+7 :2.428868   9 :1.372316   3 :8.041768   
+8 :1.566791   4 :4.009444   
+Program rozpoczyna analizę grafu algorytmem BFS.
+
+Zawartość tablicy z odleglosciami: 0
+Zawartość tablicy z odleglosciami: 1
+Zawartość tablicy z odleglosciami: 2
+Zawartość tablicy z odleglosciami: 3
+Zawartość tablicy z odleglosciami: 4
+Zawartość tablicy z odleglosciami: 1
+Zawartość tablicy z odleglosciami: 2
+Zawartość tablicy z odleglosciami: 3
+Zawartość tablicy z odleglosciami: 4
+Zawartość tablicy z odleglosciami: 5
+
+Graf jest spójny.
