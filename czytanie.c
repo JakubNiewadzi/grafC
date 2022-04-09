@@ -28,10 +28,10 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
 
   
 
-  g->macierzSasiedztwa = malloc(g->kolumny * g->wiersze * sizeof *g->macierzSasiedztwa);
+  g->macierzSasiedztwa = malloc(g->kolumny * g->wiersze * sizeof (*g->macierzSasiedztwa));
 
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
-    g->macierzSasiedztwa [i] = malloc(g->kolumny * g->wiersze * sizeof *g->macierzSasiedztwa);
+    g->macierzSasiedztwa [i] = malloc(g->kolumny * g->wiersze * sizeof (**g->macierzSasiedztwa));
   }
 
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
@@ -39,7 +39,7 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
       g->macierzSasiedztwa [i] [j] = DBL_MIN;
     }
   }
-
+  
   /*t->grafD = malloc(g->kolumny * g->wiersze * sizeof *t->grafD);
 
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
@@ -61,7 +61,6 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
     t->grafBFS [i] = malloc(g->kolumny * g->wiersze * sizeof *t->grafBFS[i]);
   }
-
   /* printf("Zaalokowano pamięć na grafBFS\n"); */
 
   t->sasiedzi = malloc(g->kolumny * g->wiersze * sizeof *t->sasiedzi);
@@ -198,6 +197,9 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
 
   t->iloscWezlow = ++aktualnyWezel;
 
+
+
+  
   fclose(p);
   fclose(kp);
   return 0;

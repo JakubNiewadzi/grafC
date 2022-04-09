@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
+#include <time.h>
 #include "czytanie.h"
 
 double losuj(double min, double max) {
@@ -10,7 +11,8 @@ double losuj(double min, double max) {
 }
 
 void wygenerujGraf (graf_t *g, tablice_t *t, FILE *p) {
-  
+
+  srand(time(NULL));
   int aktualnyWierzcholek, sasiad, iloscSasiadow;
   double wagaMinimalna, wagaMaxymalna, waga;
 
@@ -31,12 +33,13 @@ void wygenerujGraf (graf_t *g, tablice_t *t, FILE *p) {
 
   g->macierzSasiedztwa = malloc(g->kolumny * g->wiersze * sizeof *g->macierzSasiedztwa);
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
-    g->macierzSasiedztwa [i] = malloc(g->kolumny * g->wiersze * sizeof *g->macierzSasiedztwa);
+    g->macierzSasiedztwa [i] = malloc(g->kolumny * g->wiersze * sizeof **g->macierzSasiedztwa);
   }
 
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
     for(int j = 0; j < g->kolumny * g->wiersze; j++) {
       g->macierzSasiedztwa [i] [j] = DBL_MIN;
+      //printf("%lf",g->macierzSasiedztwa [i] [j]);
     }
   }
 

@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
   char* gprzedzial=NULL;
   char* wprzedzial=NULL;
   char* input=NULL;
-  char* output=NULL;
+  char* out=NULL;
 
   char* k = NULL;
   char* w = NULL;
@@ -30,13 +30,28 @@ int main(int argc, char** argv) {
 
   FILE* wyjscie = NULL;
 
+  if(argc == 1) {
+    printf("Wywołano grafC bez arumentów.\nOtwieram helpa do programu.\n");
+        printf("grafC to program do analizy grafów za pomocą algorytmów BFS i Dijkstry.\n");
+        printf("Oto lista akcptowanych przez program opcje wywołania:\n\n");
+        printf("-f plik -> podajemy plik, w którym zapisane są wierzchołki naszego grafu i wagi połączeń między nimi.\n\tZ tego pliku będzeię on czytany i przekonwertowywany na tablicę sąsiedztwa.\n\n");
+        printf("-g k w -> generacja grafu o podanej ilości kolumn i wierszy, gdzie k - liczba kolumn, a w liczba wierszy\n\toba paramentry muszą być liczbami naturalnymi.\n\tParametry nie są obowiązkowe i przy braku ich podania zostanie wygenerowany graf 10 x 10.\n\n");
+        printf("-b -> program zastosuje algorytm BFS do analizy grafu pod kątem jego zbierzności.\n\n");
+        printf("-d a b -> program zastosuje algorytm Dijkstry do analizy grafu pod kątem wyznaczania najkrótszych tras.\n\tParametr a to wierzchołek od którego algorytm zostanie zatosowany.\n\tParametr b natomiast to ewentualny punkt końcowy wyznaczanej drogi z punktu a. Jest to parametr nie obowiązkowy.\n\tOba paramentry muszą być liczbami naturalnymi.\n\n");
+        printf("-w min max -> Ustalenie przedziału wag, gdzie min to najniższa waga, a max maksymalna.\n\tOba parametry mogą być liczbami zmiennoprzecinkowymi.\n\tW przypadku nie wybrania tego opcji generowany graf będzia miał wagi zawarte w przedziale 0 - 10\n\n");
+        printf("-z plik -> pozwala zapisać wyniki wykonania programu i ewentualnie wygenerowany graf do pliku o podanej nazwie.\n\n");
+        printf("\tDo prawidłowego działania programu wymagane jest podanie opcji wywołujących działanie algorytmu BFS lub Dijkstry lub obu.\nReszta opcji jest opcjonalna.\n\tW przypadku nie podania pliku z którego program mógłby odczytać graf lub w przypadku nie sprecyzowania generacji takowego pliku\nprogram wygeneruje graf 10 x 10 z wagami z zakresu 0 - 10.\n");
+        return 0;
+  }
+  
+
   while((opt = getopt(argc, argv, "f:bdgwz:h")) != -1) {
     switch(opt){
       case 'f':
         input=optarg;
         elementWywolania += 2;
         if(elementWywolania < argc && argv[elementWywolania][0] != '-'){
-          printf("Podczas wywoływania argumentu -f należy podać maksymalnie jeden parametr.\nProgram kończy działanie.\n");
+          printf("Podczas wywoływania opcji -f należy podać maksymalnie jeden parametr.\nProgram kończy działanie.\n");
           return 1;
           }
         break;
@@ -44,7 +59,7 @@ int main(int argc, char** argv) {
         czy_wywolany=1;
         elementWywolania ++;
         if(elementWywolania < argc && argv[elementWywolania] [0] != '-') {
-          printf("Podano argument dla algorytmu BFS, który nie przyjmuje argumentów.\n");
+          printf("Podano argument dla algorytmu BFS, który nie przyjmuje opcje.\n");
           return 1;
           }
         break;
@@ -61,7 +76,7 @@ int main(int argc, char** argv) {
           poczatek = atoi(argv[elementWywolania]);
           elementWywolania ++;
         } else {
-          printf("Podczas wywoływania argumentu -d wymagane jest podanie początkowego wierzchołka wymaganego do analizy grafu za pomocą algorytmu Dijkstry.\nNie można wywołać argumentu bez tego parametru.\nWierzchołek ten powinien być nie ujemny.\n");
+          printf("Podczas wywoływania opcji -d wymagane jest podanie początkowego wierzchołka wymaganego do analizy grafu za pomocą algorytmu Dijkstry.\nNie można wywołać opcji bez tego parametru.\nWierzchołek ten powinien być nie ujemny.\n");
           return 1;
         }
         if(elementWywolania < argc && argv[elementWywolania] [0] != '-') {
@@ -75,7 +90,7 @@ int main(int argc, char** argv) {
           elementWywolania++;
         }
         if(elementWywolania < argc && argv[elementWywolania][0] != '-'){
-          printf("Podczas wywoływania argumentu -d należy podać maksymalnie dwa parametry.\nProgram kończy działanie.\n");
+          printf("Podczas wywoływania opcji -d należy podać maksymalnie dwa parametry.\nProgram kończy działanie.\n");
           return 1;
         }
         break;
@@ -102,7 +117,7 @@ int main(int argc, char** argv) {
           elementWywolania ++;
         }
         if(elementWywolania < argc && argv[elementWywolania][0] != '-'){
-          printf("Podczas wywoływania argumentu -g należy podać maksymalnie dwa parametry.\nProgram kończy działanie.\n");
+          printf("Podczas wywoływania opcji -g należy podać maksymalnie dwa parametry.\nProgram kończy działanie.\n");
           return 1;
           }
         break;
@@ -125,7 +140,7 @@ int main(int argc, char** argv) {
           wmin = argv[elementWywolania];
           elementWywolania ++;
         } else {
-          printf("Podczas wywoływania argumentu -w należy podać dwa parametry: wage minimalną i wagę maksymalną.\nPowinny być to liczby rzeczywiste nieujemne.\nNie można wywołać argumentu bez tych parametrów\n");
+          printf("Podczas wywoływania opcji -w należy podać dwa parametry: wage minimalną i wagę maksymalną.\nPowinny być to liczby rzeczywiste nieujemne.\nNie można wywołać opcji bez tych parametrów\n");
           return 1;
         }
         if(elementWywolania < argc && argv[elementWywolania] [0] != '-') {
@@ -143,29 +158,29 @@ int main(int argc, char** argv) {
           wmax = argv[elementWywolania];
           elementWywolania ++;
         } else {
-          printf("Podczas wywoływania argumentu -w należy podać dwa parametry: wage minimalną i wagę maksymalną.\nPowinny być to liczby nie ujemne.\nNie można wywołać argumentu bez tych parametrów\n");
+          printf("Podczas wywoływania opcji -w należy podać dwa parametry: wage minimalną i wagę maksymalną.\nPowinny być to liczby nie ujemne.\nNie można wywołać opcji bez tych parametrów\n");
           return 1;
         }
         break;
       case 'z':
-        output=optarg;
+        out=optarg;
         elementWywolania += 2;
         if(elementWywolania < argc && argv[elementWywolania][0] != '-'){
-          printf("Podczas wywoływania argumentu -z należy podać maksymalnie jeden parametr.\nProgram kończy działanie.\n");
+          printf("Podczas wywoływania opcji -z należy podać maksymalnie jeden parametr.\nProgram kończy działanie.\n");
           return 1;
           }
         break;
       case 'h':
         printf("Wywołano help do pragramu grafC.\n");
         printf("grafC to program do analizy grafów za pomocą algorytmów BFS i Dijkstry.\n");
-        printf("Oto lista akcptowanych przez program argumentów wywołania:\n\n");
+        printf("Oto lista akcptowanych przez program opcje wywołania:\n\n");
         printf("-f plik -> podajemy plik, w którym zapisane są wierzchołki naszego grafu i wagi połączeń między nimi.\n\tZ tego pliku będzeię on czytany i przekonwertowywany na tablicę sąsiedztwa.\n\n");
         printf("-g k w -> generacja grafu o podanej ilości kolumn i wierszy, gdzie k - liczba kolumn, a w liczba wierszy\n\toba paramentry muszą być liczbami naturalnymi.\n\tParametry nie są obowiązkowe i przy braku ich podania zostanie wygenerowany graf 10 x 10.\n\n");
         printf("-b -> program zastosuje algorytm BFS do analizy grafu pod kątem jego zbierzności.\n\n");
         printf("-d a b -> program zastosuje algorytm Dijkstry do analizy grafu pod kątem wyznaczania najkrótszych tras.\n\tParametr a to wierzchołek od którego algorytm zostanie zatosowany.\n\tParametr b natomiast to ewentualny punkt końcowy wyznaczanej drogi z punktu a. Jest to parametr nie obowiązkowy.\n\tOba paramentry muszą być liczbami naturalnymi.\n\n");
-        printf("-w min max -> Ustalenie przedziału wag, gdzie min to najniższa waga, a max maksymalna.\n\tOba parametry mogą być liczbami zmiennoprzecinkowymi.\n\tW przypadku nie wybrania tego argumentu generowany graf będzia miał wagi zawarte w przedziale 0 - 10\n\n");
+        printf("-w min max -> Ustalenie przedziału wag, gdzie min to najniższa waga, a max maksymalna.\n\tOba parametry mogą być liczbami zmiennoprzecinkowymi.\n\tW przypadku nie wybrania tego opcji generowany graf będzia miał wagi zawarte w przedziale 0 - 10\n\n");
         printf("-z plik -> pozwala zapisać wyniki wykonania programu i ewentualnie wygenerowany graf do pliku o podanej nazwie.\n\n");
-        printf("\tDo prawidłowego działania programu wymagane jest podanie argumentów wywołujących działanie algorytmu BFS lub Dijkstry lub obu.\nReszta argumentów jest opcjonalna.\n\tW przypadku nie podania pliku z którego program mógłby odczytać graf lub w przypadku nie sprecyzowania generacji takowego pliku\nprogram wygeneruje graf 10 x 10 z wagami z zakresu 0 - 10.\n");
+        printf("\tDo prawidłowego działania programu wymagane jest podanie opcji wywołujących działanie algorytmu BFS lub Dijkstry lub obu.\nReszta opcji jest opcjonalna.\n\tW przypadku nie podania pliku z którego program mógłby odczytać graf lub w przypadku nie sprecyzowania generacji takowego pliku\nprogram wygeneruje graf 10 x 10 z wagami z zakresu 0 - 10.\n");
         return 0;
         break;
       default:
@@ -173,17 +188,15 @@ int main(int argc, char** argv) {
     }
   }
 
-  if(output == NULL) {
-    wyjscie = stdout;
-  } else {
-    wyjscie = fopen (output, "w");
+  if(out != NULL) {
+    wyjscie = fopen (out, "w");
   }
 
-  if(czy_wywolany == 0 && czy_dijkstra == 0) {
+  /*if(czy_wywolany == 0 && czy_dijkstra == 0) {
     printf("Podczas wywoływania programu nie podano żadnej metody analizy grafu!\n");
-    printf("Jednym z argumentów wywołania powinien być -b lub -d lub oba.\n");
+    printf("Jednym z opcje wywołania powinien być -b lub -d lub oba.\n");
     return 1;
-  }
+  }*/
   
   graf_t *graf=malloc(sizeof (*graf));
   tablice_t *tablice=malloc(sizeof (*tablice));
@@ -193,7 +206,7 @@ int main(int argc, char** argv) {
     graf->wagaMax = atof(wmax);
 
     if(graf->wagaMin > graf->wagaMax) {
-      printf("Podana przez użytkownika waga minimalna jest wieksza od wagi maksymalnej!\nPodczas wywoływania argumentu -w pierwszą zmienną powinna być waga minimalna, a potem maksymalna.\nNie odwrotnie!\nProszę poprawić kolejność wag lub podać inne ich wartości.\n");
+      printf("Podana przez użytkownika waga minimalna jest wieksza od wagi maksymalnej!\nPodczas wywoływania opcji -w pierwszą zmienną powinna być waga minimalna, a potem maksymalna.\nNie odwrotnie!\nProszę poprawić kolejność wag lub podać inne ich wartości.\n");
 
       czyszczenieTablic(tablice);
       czyszczenieGrafu(graf);
@@ -208,7 +221,7 @@ int main(int argc, char** argv) {
       free(graf);
       return 1;
     }
-    fprintf(wyjscie, "Udało się prawidłowo odczytać podany przez użytkownika plik.\n");
+    printf( "Udało się prawidłowo odczytać podany przez użytkownika plik.\n");
   } else{
     if(k != NULL) {
       graf->kolumny = atoi(k);
@@ -219,14 +232,26 @@ int main(int argc, char** argv) {
       graf->kolumny = 10;
       graf->wiersze = 10;
     }
-    fprintf(wyjscie, "Program grafC rozpoczyna generacje grafu o wymiarach %d x %d.\n", graf->kolumny, graf->wiersze);
+    printf( "Program grafC rozpoczyna generacje grafu o wymiarach %d x %d.\n", graf->kolumny, graf->wiersze);
+    if(out!=NULL){
     wygenerujGraf(graf, tablice, wyjscie);
+      }else{
+      wygenerujGraf(graf, tablice, stdout);
+      }
     }
-  if(czy_wywolany==1){
-    int czy_spojny=0;
-    fprintf(wyjscie, "Program rozpoczyna analizę grafu algorytmem BFS.\n\n");
 
+  if(out != NULL) {
+    fclose(wyjscie);
+  }
     int ile_elementow = graf->kolumny*graf->wiersze;
+  if(czy_wywolany==1){
+    
+
+ 
+    int czy_spojny=0;
+    printf("Program rozpoczyna analizę grafu algorytmem BFS.\n\n");
+
+    
     
     bfs_t *output = malloc(sizeof(*output));
     output->odleglosc = malloc(ile_elementow*sizeof(*output->odleglosc));
@@ -244,55 +269,53 @@ int main(int argc, char** argv) {
     }
       printf("\n");*/
     for(int i=0;i<ile_elementow;i++){
-      fprintf(wyjscie, "Zawartość tablicy z odleglosciami: %d\n", output->odleglosc[i]);
+      printf( "Zawartość tablicy z odleglosciami: %d\n", output->odleglosc[i]);
       if(output->odleglosc[i]==-1){
         czy_spojny=1;
         break;
       }     
     }
     if(czy_spojny==0){
-      fprintf(wyjscie, "\nGraf jest spójny.\n");
+      printf( "\nGraf jest spójny.\n");
     }else{
-      fprintf(wyjscie, "\nGraf nie jest spójny.\n");
+      printf( "\nGraf nie jest spójny.\n");
     }
 
       czyszczenieBFS(output);
+
   }
 
   if(czy_dijkstra==1){
-    if(poczatek > graf->kolumny * graf->wiersze - 1 || poczatek < 0) {
-      printf("\nPoczątkowy węzeł podany przez użytkownika do analizy grafu algorytmem Dijkstry nie zawiera się w grafie!\nProszę podać wierzchołek znajdujący się w przedziale od 0 do %d\n", graf->wiersze * graf->kolumny - 1);
+    if(poczatek > ile_elementow - 1 || poczatek < 0) {
+      printf("\nPoczątkowy węzeł podany przez użytkownika do analizy grafu algorytmem Dijkstry nie zawiera się w grafie!\nProszę podać wierzchołek znajdujący się w przedziale od 0 do %d\n", ile_elementow - 1);
 
       czyszczenieTablic(tablice);
       czyszczenieGrafu(graf);
       return 1;
     }
     
-    if(koniec > graf->kolumny * graf->wiersze - 1) {
-      printf("\nKońcowy węzeł podany przez użytkownika do analizy grafu algorytmem Dijkstry nie zawiera się w grafie!\nProszę podać wierzchołek znajdujący się w przedziale od 0 do %d\n", graf->wiersze * graf->kolumny - 1);
+    if(koniec > ile_elementow - 1) {
+      printf("\nKońcowy węzeł podany przez użytkownika do analizy grafu algorytmem Dijkstry nie zawiera się w grafie!\nProszę podać wierzchołek znajdujący się w przedziale od 0 do %d\n", ile_elementow - 1);
 
       czyszczenieTablic(tablice);
       czyszczenieGrafu(graf);
       return 1;
     }
-    fprintf(wyjscie, "\nProgram rozpoczyna analizę grafu algorytmem Dijkstry.\n\n");
-    /*for(int i=0;i<graf->kolumny*graf->wiersze;i++){
-      for(int j=0;j<graf->kolumny*graf->wiersze;j++)
-        printf("%lf\t", graf->macierzSasiedztwa[i][j]);
-      printf("\n");
-    }*/
-    double * droga = malloc(graf->kolumny * graf->wiersze * sizeof(*droga));
-    dijkstra(graf, poczatek, graf->kolumny*graf->wiersze, droga);
+    printf( "\nProgram rozpoczyna analizę grafu algorytmem Dijkstry.\n\n");
 
-    for(int i =0;i<graf->kolumny*graf->wiersze;i++){
-    fprintf(wyjscie, "Droga do wierzchołka %d wynosi %lf \n", i, droga[i]);
+    double * droga = malloc(ile_elementow * sizeof(*droga));
+    
+    dijkstra(graf, poczatek, ile_elementow, droga);
+
+    for(int i =0;i<ile_elementow;i++){
+    printf("Droga do wierzchołka %d wynosi %lf \n", i, droga[i]);
   }
 
-    if(koniec > 0) {
-      if(droga[koniec] > 0) {
-        fprintf(wyjscie, "\nNajkrótsza droga z wierzchołka %d do wierzchołka %d wynosi %lf\n",poczatek, koniec, droga[koniec]);
+    if(koniec >= 0) {
+      if(droga[koniec] >= 0) {
+        printf( "\nNajkrótsza droga z wierzchołka %d do wierzchołka %d wynosi %lf\n",poczatek, koniec, droga[koniec]);
       } else {
-        fprintf(wyjscie, "\nDo końcowego wierzchołka nie prowadzi żadna droga zatem program nie może wyliczyć do niego najkrótszej trasy!\n");
+        printf("\nDo końcowego wierzchołka nie prowadzi żadna droga zatem program nie może wyliczyć do niego najkrótszej trasy!\n");
       }
     }
     free(droga);
@@ -300,6 +323,6 @@ int main(int argc, char** argv) {
   
   czyszczenieTablic(tablice);
   czyszczenieGrafu(graf);
-  fclose(wyjscie);
+
   return 0;
 }
