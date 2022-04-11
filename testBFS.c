@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <float.h>
 
 #include "czytanie.h"
 #include "BFS.h"
@@ -13,7 +14,7 @@ int main (int argc, char **argv) {
     printf("Podano za mało argumentów wywołania!\n\n");
     printf("Program testujący przyjmuje 2 argumenty.\n");
     printf("Pierwszym z nich jest nazwa pliku zawierającego zapis grafu. Drugim jest liczba 0 lub 1.\n");
-    printf("0 oznacza, że w pliku jest zapisany garaf spójny, 1 zaś oznacza, że graf nie jest spójny.\n");
+    printf("0 oznacza, że w pliku jest zapisany graf spójny, 1 zaś oznacza, że graf nie jest spójny.\n");
     return 1;
   }
 
@@ -39,7 +40,8 @@ int main (int argc, char **argv) {
   czyBlad = grafWTablice(graf,tablice,p);
   
   if(czyBlad == 1) {
-    czyszczenieTablic(tablice);
+    free(tablice->sasiedzi);
+    free(tablice);
     czyszczenieGrafu(graf);
     printf("Proces czytania nie przebiegł prawidłowo.\n");
     printf("Awaryjne zatrzymanie programu\n");
@@ -56,6 +58,23 @@ int main (int argc, char **argv) {
   output->kolor = malloc(ile_elementow*sizeof(*output->kolor));
 
   printf("\nRozpoczynam analizę grafu algorytmem BFS.\n");
+
+  tablice->grafBFS = malloc(ile_elementow * sizeof *tablice->grafBFS);
+
+  for(int i = 0; i < ile_elementow; i++) {
+    tablice->grafBFS [i] = malloc(tablice->sasiedzi[i] * sizeof *tablice->grafBFS[i]);
+  }
+
+  int indeks_bfs;
+    for(int i =0;i<ile_elementow;i++){
+      indeks_bfs=0;
+      for(int j=0;j<ile_elementow;j++){
+        if(graf->macierzSasiedztwa[i][j]!=DBL_MIN){
+          tablice->grafBFS[i][indeks_bfs]=j;
+          indeks_bfs++;
+        }
+      }
+    }
   
   BFS(tablice->grafBFS, 0, ile_elementow, tablice->sasiedzi, output);
     

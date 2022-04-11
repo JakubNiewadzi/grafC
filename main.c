@@ -34,12 +34,12 @@ int main(int argc, char** argv) {
     printf("Wywołano grafC bez arumentów.\nOtwieram helpa do programu.\n");
         printf("grafC to program do analizy grafów za pomocą algorytmów BFS i Dijkstry.\n");
         printf("Oto lista akcptowanych przez program opcje wywołania:\n\n");
-        printf("-f plik -> podajemy plik, w którym zapisane są wierzchołki naszego grafu i wagi połączeń między nimi.\n\tZ tego pliku będzeię on czytany i przekonwertowywany na tablicę sąsiedztwa.\n\n");
-        printf("-g k w -> generacja grafu o podanej ilości kolumn i wierszy, gdzie k - liczba kolumn, a w liczba wierszy\n\toba paramentry muszą być liczbami naturalnymi.\n\tParametry nie są obowiązkowe i przy braku ich podania zostanie wygenerowany graf 10 x 10.\n\n");
+        printf("-f <plik> -> podajemy plik, w którym zapisane są wierzchołki naszego grafu i wagi połączeń między nimi.\n\tZ tego pliku będzeię on czytany i przekonwertowywany na tablicę sąsiedztwa.\n\n");
+        printf("-g <k w> -> generacja grafu o podanej ilości kolumn i wierszy, gdzie k - liczba kolumn, a w liczba wierszy\n\toba paramentry muszą być liczbami naturalnymi.\n\tParametry nie są obowiązkowe i przy braku ich podania zostanie wygenerowany graf 10 x 10.\n\n");
         printf("-b -> program zastosuje algorytm BFS do analizy grafu pod kątem jego zbierzności.\n\n");
-        printf("-d a b -> program zastosuje algorytm Dijkstry do analizy grafu pod kątem wyznaczania najkrótszych tras.\n\tParametr a to wierzchołek od którego algorytm zostanie zatosowany.\n\tParametr b natomiast to ewentualny punkt końcowy wyznaczanej drogi z punktu a. Jest to parametr nie obowiązkowy.\n\tOba paramentry muszą być liczbami naturalnymi.\n\n");
-        printf("-w min max -> Ustalenie przedziału wag, gdzie min to najniższa waga, a max maksymalna.\n\tOba parametry mogą być liczbami zmiennoprzecinkowymi.\n\tW przypadku nie wybrania tego opcji generowany graf będzia miał wagi zawarte w przedziale 0 - 10\n\n");
-        printf("-z plik -> pozwala zapisać wyniki wykonania programu i ewentualnie wygenerowany graf do pliku o podanej nazwie.\n\n");
+        printf("-d <a b> -> program zastosuje algorytm Dijkstry do analizy grafu pod kątem wyznaczania najkrótszych tras.\n\tParametr a to wierzchołek od którego algorytm zostanie zatosowany.\n\tParametr b natomiast to ewentualny punkt końcowy wyznaczanej drogi z punktu a. Jest to parametr nie obowiązkowy.\n\tOba paramentry muszą być liczbami naturalnymi.\n\n");
+        printf("-w <min max> -> Ustalenie przedziału wag, gdzie min to najniższa waga, a max maksymalna.\n\tOba parametry mogą być liczbami zmiennoprzecinkowymi.\n\tW przypadku nie wybrania tego opcji generowany graf będzia miał wagi zawarte w przedziale 0 - 10\n\n");
+        printf("-z <plik> -> pozwala zapisać wyniki wykonania programu i ewentualnie wygenerowany graf do pliku o podanej nazwie.\n\n");
         printf("\tDo prawidłowego działania programu wymagane jest podanie opcji wywołujących działanie algorytmu BFS lub Dijkstry lub obu.\nReszta opcji jest opcjonalna.\n\tW przypadku nie podania pliku z którego program mógłby odczytać graf lub w przypadku nie sprecyzowania generacji takowego pliku\nprogram wygeneruje graf 10 x 10 z wagami z zakresu 0 - 10.\n");
         return 0;
   }
@@ -243,7 +243,8 @@ int main(int argc, char** argv) {
   if(out != NULL) {
     fclose(wyjscie);
   }
-    int ile_elementow = graf->kolumny*graf->wiersze;
+  int ile_elementow = graf->kolumny*graf->wiersze;
+  
   if(czy_wywolany==1){
     
 
@@ -252,6 +253,21 @@ int main(int argc, char** argv) {
     printf("Program rozpoczyna analizę grafu algorytmem BFS.\n\n");
 
     
+    tablice->grafBFS = malloc(ile_elementow * sizeof *tablice->grafBFS);
+
+    for(int i = 0; i < ile_elementow; i++) {
+      tablice->grafBFS [i] = malloc(tablice->sasiedzi[i] * sizeof *tablice->grafBFS[i]);
+    }
+    int indeks_bfs;
+    for(int i =0;i<ile_elementow;i++){
+      indeks_bfs=0;
+      for(int j=0;j<ile_elementow;j++){
+        if(graf->macierzSasiedztwa[i][j]!=DBL_MIN){
+          tablice->grafBFS[i][indeks_bfs]=j;
+          indeks_bfs++;
+        }
+      }
+    }
     
     bfs_t *output = malloc(sizeof(*output));
     output->odleglosc = malloc(ile_elementow*sizeof(*output->odleglosc));
@@ -281,7 +297,7 @@ int main(int argc, char** argv) {
       printf( "\nGraf nie jest spójny.\n");
     }
 
-      czyszczenieBFS(output);
+    czyszczenieBFS(output);
 
   }
 
@@ -307,15 +323,16 @@ int main(int argc, char** argv) {
     
     dijkstra(graf, poczatek, ile_elementow, droga);
 
-    for(int i =0;i<ile_elementow;i++){
-    printf("Droga do wierzchołka %d wynosi %lf \n", i, droga[i]);
-  }
 
     if(koniec >= 0) {
       if(droga[koniec] >= 0) {
         printf( "\nNajkrótsza droga z wierzchołka %d do wierzchołka %d wynosi %lf\n",poczatek, koniec, droga[koniec]);
       } else {
-        printf("\nDo końcowego wierzchołka nie prowadzi żadna droga zatem program nie może wyliczyć do niego najkrótszej trasy!\n");
+          printf("\nDo końcowego wierzchołka nie prowadzi żadna droga zatem program nie może wyliczyć do niego najkrótszej trasy!\n");
+      }
+    }else{
+      for(int i =0;i<ile_elementow;i++){
+        printf("Droga do wierzchołka %d wynosi %lf \n", i, droga[i]);
       }
     }
     free(droga);

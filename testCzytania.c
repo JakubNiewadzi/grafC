@@ -61,7 +61,8 @@ int main (int argc, char** argv) {
 
   printf("Wagi znajdują się w odpowiednim zakresie!\n\nFunkcja czytająca graf z pliku działa prawidłowo!\n");
 
-  czyszczenieTablic(tablice);
+  free(tablice->sasiedzi);
+  free(tablice);
   czyszczenieGrafu(graf);
   
   return 0;

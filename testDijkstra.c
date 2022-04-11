@@ -38,7 +38,8 @@ int main (int argc, char **argv) {
   czyBlad = grafWTablice(graf,tablice,p);
   
   if(czyBlad == 1) {
-    czyszczenieTablic(tablice);
+    free(tablice->sasiedzi);
+    free(tablice);
     czyszczenieGrafu(graf);
     printf("Proces czytania nie przebiegł prawidłowo.\n");
     printf("Awaryjne zatrzymanie programu\n");
@@ -62,7 +63,8 @@ int main (int argc, char **argv) {
     printf("Funkcja nie działa prawidłowo.\n");
   }
 
-  czyszczenieTablic(tablice);
+  free(tablice->sasiedzi);
+  free(tablice);
   czyszczenieGrafu(graf);
   return 0;
 }

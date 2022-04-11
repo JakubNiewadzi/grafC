@@ -11,27 +11,25 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
   char poprzedniZnak;
   int aktualnyWezel, aktualnySasiad, licznikSasiadow;
   double waga;
+  char* linijka;
   FILE *p = fopen (plik, "r");
 
   if(p == NULL) {
     printf("Program nie ma dostępu do pliku z którego chcesz pobrać dane na temat opisu grafu, spróbuj podać inny plik.\n");
     return 1;
   }
-  
-  FILE *kp = fopen (plik, "r");        /*plik pomocniczy do określenia ilosci punktów w wierszu */
 
-
-  if(fscanf(p,"%d %d", &(g->wiersze), &(g->kolumny)) != 2 && fscanf(kp,"%d %d", &(g->wiersze), &(g->kolumny))!=2) {
+  if(fscanf(p,"%d %d", &(g->wiersze), &(g->kolumny)) != 2) {
     printf("Nieodpowiedni format lub ilość liczb w pierwszym wierszu pliku!\nPowinny być to 2 liczby naturalne określające liczbę wierszy i kolumn grafu\n");
     return 1;        /*błąd związany z nie podaniem odpowiedniej ilości wierszy i kolumn*/
   }
 
-  
+  linijka = malloc(14 * (g->kolumny * g->wiersze) * sizeof *linijka);
 
-  g->macierzSasiedztwa = malloc(g->kolumny * g->wiersze * sizeof (*g->macierzSasiedztwa));
+  g->macierzSasiedztwa = malloc(g->kolumny * g->wiersze * sizeof *g->macierzSasiedztwa);
 
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
-    g->macierzSasiedztwa [i] = malloc(g->kolumny * g->wiersze * sizeof (**g->macierzSasiedztwa));
+    g->macierzSasiedztwa [i] = malloc(g->kolumny * g->wiersze * sizeof *g->macierzSasiedztwa);
   }
 
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
@@ -39,29 +37,6 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
       g->macierzSasiedztwa [i] [j] = DBL_MIN;
     }
   }
-  
-  /*t->grafD = malloc(g->kolumny * g->wiersze * sizeof *t->grafD);
-
-  for(int i = 0; i < g->kolumny * g->wiersze; i++) {
-    t->grafD [i] = malloc(4 * sizeof *t->grafD[i]);
-  }
-
-   printf("Zaalokowano pamięć na grafD\n"); 
-
-  for(int i = 0; i < g->kolumny * g->wiersze; i++) {
-    for(int j = 0; j < 4; j++) {
-      t->grafD [i] [j] = DBL_MIN;
-    }
-  }
-
-   printf("Wypełniono grafD\n"); */
-
-  t->grafBFS = malloc(g->kolumny * g->wiersze * sizeof *t->grafBFS);
-
-  for(int i = 0; i < g->kolumny * g->wiersze; i++) {
-    t->grafBFS [i] = malloc(g->kolumny * g->wiersze * sizeof *t->grafBFS[i]);
-  }
-  /* printf("Zaalokowano pamięć na grafBFS\n"); */
 
   t->sasiedzi = malloc(g->kolumny * g->wiersze * sizeof *t->sasiedzi);
 
@@ -70,148 +45,87 @@ int grafWTablice (graf_t *g, tablice_t *t, char *plik ) {  /*pobieram wskaźnik 
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
     t->sasiedzi [i] = 0;
   }
-
-  /* printf("Wypełniono sasiedzi\n"); */
-
-  while(c != '\n') {
-    c = fgetc(kp);
-  }
-
-  aktualnyWezel = 0;
-  licznikSasiadow = 0;
-  poprzedniZnak = c;
-
-  while(c != EOF) {     /* przelatuje kopie pliku sprawdzajac ile jest zapisanych połączeń w jednym wierszu dodatkow wypełniając tablice sasiedzi*/
-    c = fgetc(kp);
-
-    if(c == ' ' || c == '\t') {
-      if(isalnum(poprzedniZnak) == 8) {
-        licznikSasiadow ++;
-      }
-    }
-
-    if(c == '\n' || c == EOF) {
-      licznikSasiadow ++;
-      licznikSasiadow = licznikSasiadow / 2;
-      t->sasiedzi [aktualnyWezel] = licznikSasiadow;
-      /*printf("aktualny wezeł %d ma %d sąsiadów\n", aktualnyWezel, g->sasiedzi [aktualnyWezel]); */
-      aktualnyWezel++;
-      licznikSasiadow = 0;
-    }
-
-    poprzedniZnak = c;
-  }
-
-  /*
-  for(int i = 0; i < 9; i++) {
-    printf("liczba sasiadów dla wierzchołka %d = %d\n", i, t->sasiedzi [i]);
-  }
-  */
   
+  int koniec, iterator, dwukropek;
   aktualnyWezel = 0;
-  licznikSasiadow = 0;
+  fgets(linijka, 11, p);
 
-  while(fscanf(p,"%d :%lf", &aktualnySasiad, &waga) == 2) {    /* główna pętla zapisująca odpowiednie dane w tablicach grafD i grafBFS */
+  while(fgets(linijka, 14 * (g->kolumny * g->wiersze), p) != NULL) {    /* główna pętla zapisująca odpowiednie dane w tablicach grafD i grafBFS */
+    /*printf("\t%s\n", linijka);*/
+    licznikSasiadow = 0;
+    while(sscanf(linijka, "%d :%lf", &aktualnySasiad, &waga) == 2) {
+      /*printf("\t%d , waga %lf\n", aktualnySasiad, waga);*/
 
-    if(aktualnySasiad>=g->wiersze*g->kolumny || aktualnySasiad<0){
-      printf("W pliku znajduje się wierzchołek, który wychodzi poza podany zakres\n");
-      return 1;
-    }
+      iterator = 0;
+      dwukropek = 0;
+      koniec = 0;
+      while(koniec == 0) {
+        if(dwukropek == 0) {
+          if(linijka [iterator] == '\n' || iterator > 14 * (g->kolumny * g->wiersze) ) {
+            koniec = 1;
+          }
 
+          if(linijka [iterator] == ':') {
+            linijka [iterator] = ' ';
+            iterator++;
+            dwukropek = 1;
+          } else {
+            linijka [iterator] = ' ';
+            iterator++;
+          }
+        } else {
+          if(linijka [iterator] == '\n' || iterator > 14 * (g->kolumny * g->wiersze) ) {
+            koniec = 1;
+          }
 
-    if(t->sasiedzi[aktualnyWezel] == licznikSasiadow) {
-      aktualnyWezel ++;
-      licznikSasiadow = 0;
-    }
+          if(isalnum(linijka [iterator]) != 0 && linijka [iterator + 1] == ' ') {
+            linijka [iterator] = ' ';
+            koniec = 1;
+          } else {
+            linijka [iterator] = ' ';
+            iterator++;
+          }
+        }
+      }
 
-    if(t->sasiedzi[aktualnyWezel] == 0) {
-      aktualnyWezel ++;
-      licznikSasiadow = 0;
-    }
-
-    /*
-    printf("\t\taktualnyWezel = %d, aktualnySasiad = %d, waga = %lf\n", aktualnyWezel, aktualnySasiad, waga);
-    printf("\t\tsasiedzi[%d] = %d, licznikSasiadow = %d\n", aktualnyWezel, t->sasiedzi[aktualnyWezel], licznikSasiadow);
-    */
+      licznikSasiadow++;
     
-
-    if(aktualnySasiad == aktualnyWezel - 1) {
-      //t->grafD [aktualnyWezel] [0] = waga;
-      t->grafBFS [aktualnyWezel] [licznikSasiadow] = aktualnySasiad;
+      if(aktualnySasiad>=g->wiersze*g->kolumny || aktualnySasiad<0){
+        printf("W pliku znajduje się wierzchołek, który wychodzi poza podany zakres.\nProgram kończy działanie.\n");
+       return 1;
+      }
+    
       g->macierzSasiedztwa [aktualnyWezel] [aktualnySasiad] = waga;
+      t->sasiedzi [aktualnyWezel] ++;
 
       /*
-      printf("\nDla wezła %d i sąsiada %d przypisano:", aktualnyWezel, aktualnySasiad);
-      printf("\n\tgrafD [%d] [0] = %lf", aktualnyWezel, t->grafD [aktualnyWezel] [0]);
-      printf("\n\tgrafBFS [%d] [%d] = %d\n", aktualnyWezel, licznikSasiadow, t->grafBFS [aktualnyWezel] [licznikSasiadow]);
-      printf("\n\tmacierzSasiedztwa [%d] [%d] = %lf\n", aktualnyWezel, aktualnySasiad, waga);
+      printf("\nsasiedzi [%d] = %d", aktualnyWezel, t->sasiedzi [aktualnyWezel]);
+      printf("\nmacierzSasiedztwa [%d] [%d] = %lf\n\n", aktualnyWezel, aktualnySasiad, waga);
       */
       
-
-    } else if(aktualnySasiad == aktualnyWezel + g->wiersze) {
-      //t->grafD [aktualnyWezel] [1] = waga;
-      t->grafBFS [aktualnyWezel] [licznikSasiadow] = aktualnySasiad;
-      g->macierzSasiedztwa [aktualnyWezel] [aktualnySasiad] = waga;
-
-      /*
-      printf("\nDla wezła %d i sąsiada %d przypisano:", aktualnyWezel, aktualnySasiad);
-      printf("\n\tgrafD [%d] [1] = %lf", aktualnyWezel, t->grafD [aktualnyWezel] [1]);
-      printf("\n\tgrafBFS [%d] [%d] = %d\n", aktualnyWezel, licznikSasiadow, t->grafBFS [aktualnyWezel] [licznikSasiadow]);
-      printf("\n\tmacierzSasiedztwa [%d] [%d] = %lf\n", aktualnyWezel, aktualnySasiad, waga);
-      */
-
-    } else if(aktualnySasiad == aktualnyWezel + 1) {
-      //t->grafD [aktualnyWezel] [2] = waga;
-      t->grafBFS [aktualnyWezel] [licznikSasiadow] = aktualnySasiad;
-      g->macierzSasiedztwa [aktualnyWezel] [aktualnySasiad] = waga;
-
-      /*
-      printf("\nDla wezła %d i sąsiada %d przypisano:", aktualnyWezel, aktualnySasiad);
-      printf("\n\tgrafD [%d] [2] = %lf", aktualnyWezel, t->grafD [aktualnyWezel] [2]);
-      printf("\n\tgrafBFS [%d] [%d] = %d\n", aktualnyWezel, licznikSasiadow, t->grafBFS [aktualnyWezel] [licznikSasiadow]);
-      printf("\n\tmacierzSasiedztwa [%d] [%d] = %lf\n", aktualnyWezel, aktualnySasiad, waga);
-      */
-
-    } else if(aktualnySasiad == aktualnyWezel - g->wiersze) {
-      //t->grafD [aktualnyWezel] [3] = waga;
-      t->grafBFS [aktualnyWezel] [licznikSasiadow] = aktualnySasiad;
-      g->macierzSasiedztwa [aktualnyWezel] [aktualnySasiad] = waga;
-
-      /*
-      printf("\nDla wezła %d i sąsiada %d przypisano:", aktualnyWezel, aktualnySasiad);
-      printf("\n\tgrafD [%d] [3] = %lf", aktualnyWezel, t->grafD [aktualnyWezel] [3]);
-      printf("\n\tgrafBFS [%d] [%d] = %d\n", aktualnyWezel, licznikSasiadow, t->grafBFS [aktualnyWezel] [licznikSasiadow]);
-      printf("\n\tmacierzSasiedztwa [%d] [%d] = %lf\n", aktualnyWezel, aktualnySasiad, waga);
-      */
-
-    } else {
-      /*printf("Żle sformułowany plik! Węzeł nr. %d nie może sąsiadować z węzłem nr. %d!\n", aktualnyWezel, aktualnySasiad);*/
-      t->grafBFS [aktualnyWezel] [licznikSasiadow] = aktualnySasiad;
-      g->macierzSasiedztwa [aktualnyWezel] [aktualnySasiad] = waga;
-      /*return 1;        błąd związany z podaniem nie odpowowiednich wierzchołków jako sąsiadów*/
     }
-  licznikSasiadow ++;
+
+    aktualnyWezel++;
   }
+
 
   /*printf("\n");*/
 
-  t->iloscWezlow = ++aktualnyWezel;
+  t->iloscWezlow = aktualnyWezel;
 
-
-
-  
   fclose(p);
-  fclose(kp);
+  free(linijka);
+  /*fclose(kp);*/
   return 0;
 }
 
 void czyszczenieTablic(tablice_t *tablice) {
   free(tablice->sasiedzi);
-  for(int i = 0; i < tablice->iloscWezlow; i++) {
+  /*for(int i = 0; i < tablice->iloscWezlow; i++) {
     free(tablice->grafBFS [i]);
     //free(tablice->grafD [i]);
   }
-  free(tablice->grafBFS);
+  free(tablice->grafBFS);*/
   //free(tablice->grafD);
   free(tablice);
 }
