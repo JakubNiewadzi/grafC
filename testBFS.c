@@ -20,7 +20,7 @@ int main (int argc, char **argv) {
 
   p = argv [1];
   czySpojny = atoi(argv [2]);
-
+  FILE *out = argc>3 ? fopen(argv[3], "w"):stdout;
   printf("Rozpoczynam test funkcji sprawdzającej spójność grafu za pomocą algorytmu BFS\n");
   printf("Analizie zostannie poddany graf zapisany w pliku o nazwie %s.\n", p);
 
@@ -86,18 +86,19 @@ int main (int argc, char **argv) {
   }
   
   if(wynikBFS == czySpojny) {
-    printf("Funkcja analizująca graf pod względem spójności wykorzystując algorytm BFS wykazała ");
+    fprintf(out, "Funkcja analizująca graf pod względem spójności wykorzystując algorytm BFS wykazała ");
     if(wynikBFS == 0) {
-      printf("spójność grafu!\n\nFunkcja działa prawidłowo!\n");
+      fprintf(out, "spójność grafu!\n\nFunkcja działa prawidłowo!\n");
     } else {
-      printf("nie spójność grafu!\n\nFunkcja działa prawidłowo!\n");
+      fprintf(out, "nie spójność grafu!\n\nFunkcja działa prawidłowo!\n\n\n");
     }
   } else {
-    printf("Funkcja analizująca graf pod względem spójności wykorzystując algorytm BFS zwróciła inny wynik niż przewidywano.\n\n");
-    printf("Funkcja nie działa prawidłowo.\n");
+    fprintf(out, "Funkcja analizująca graf pod względem spójności wykorzystując algorytm BFS zwróciła inny wynik niż przewidywano.\n\n");
+    fprintf(out, "Funkcja nie działa prawidłowo.\n\n\n");
   }
 
   czyszczenieTablic(tablice);
   czyszczenieGrafu(graf);
+  fclose(out);
   return 0;
 }

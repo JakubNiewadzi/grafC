@@ -27,6 +27,8 @@ int main (int argc, char** argv) {
   wagMin = atof(argv[4]);
   wagMax = atof(argv[5]);
 
+  FILE *out = argc > 6 ? fopen(argv[6], "w"):stdout;
+
   printf("Rozpoczynam test funkcji czytającej graf.\nGraf będzie odczytywany z pliku o nazwie: %s.\n", p);
 
   grafWTablice(graf, tablice, p);
@@ -36,10 +38,10 @@ int main (int argc, char** argv) {
   iloscWierzcholkow = tablice->iloscWezlow;
 
   if(iloscWierzcholkow != kol * wier) {
-    printf("Liczba wierzchołków nie zgadza się!\nProgram odczytał %d zamiast %d wierzchołków.\nFunkcja czytająca nie działa prawidłowo!\n", iloscWierzcholkow, kol * wier);
-    return 1;
+    fprintf(out, "Liczba wierzchołków nie zgadza się!\nProgram odczytał %d zamiast %d wierzchołków.\nFunkcja czytająca nie działa prawidłowo!\n", iloscWierzcholkow, kol * wier);
+    return 0;
   } else {
-    printf("Liczba wierzchołków zgadza się!\n\n");
+    fprintf(out, "Liczba wierzchołków zgadza się!\n\n");
   }
 
   printf("Sprawdzam czy program przypisał do tablicy sąsiedztwa wagi połączeń w odpowiednim zakresie.\n");
@@ -48,18 +50,18 @@ int main (int argc, char** argv) {
   for(int i = 0; i < kol * wier; i++) {
     for(int j = 0; j < kol * wier; j++) {
       if(graf->macierzSasiedztwa[i] [j] != DBL_MIN && graf->macierzSasiedztwa[i] [j] < wagMin) {
-        printf("Wartość wag nie są prawidłowe!\nGraf przypisał wagę równą %lf. Nie znajduje się ona w wyznaczonym przedziale.\nFunkcja czytająca nie działa prawidłowo!\n", graf->macierzSasiedztwa[i] [j]);
-        return 1;
+        fprintf(out, "Wartość wag nie są prawidłowe!\nGraf przypisał wagę równą %lf. Nie znajduje się ona w wyznaczonym przedziale.\nFunkcja czytająca nie działa prawidłowo!\n", graf->macierzSasiedztwa[i] [j]);
+        return 0;
       }
 
       if(graf->macierzSasiedztwa[i] [j] > wagMax) {
-        printf("Wartość wag nie są prawidłowe!\nGraf przypisał wagę równą %lf. Nie znajduje się ona w wyznaczonym przedziale.\nFunkcja czytająca nie działa prawidłowo!\n", graf->macierzSasiedztwa[i] [j]);
-        return 1;
+        fprintf(out, "Wartość wag nie są prawidłowe!\nGraf przypisał wagę równą %lf. Nie znajduje się ona w wyznaczonym przedziale.\nFunkcja czytająca nie działa prawidłowo!\n", graf->macierzSasiedztwa[i] [j]);
+        return 0;
       }
     }
   }
 
-  printf("Wagi znajdują się w odpowiednim zakresie!\n\nFunkcja czytająca graf z pliku działa prawidłowo!\n");
+  fprintf(out, "Wagi znajdują się w odpowiednim zakresie!\n\nFunkcja czytająca graf z pliku działa prawidłowo!\n\n\n");
 
   free(tablice->sasiedzi);
   free(tablice);

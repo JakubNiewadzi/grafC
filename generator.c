@@ -10,16 +10,25 @@ double losuj(double min, double max) {
   return min + (rand() / dzielnik);
 }
 
-void wygenerujGraf (graf_t *g, tablice_t *t, FILE *p) {
+void druk (FILE * plik, graf_t *g) {
+  fprintf(plik,"%d %d\n", g->kolumny, g->wiersze);
+
+  for(int i = 0; i < g->kolumny * g->wiersze; i++) {
+    for(int j = 0; j < g->kolumny * g->wiersze; j++) {
+      if(g->macierzSasiedztwa [i] [j] != DBL_MIN) {
+        fprintf(plik,"%d :%lf    ", j, g->macierzSasiedztwa [i] [j]);
+      }
+    }
+
+    fprintf(plik,"\n");
+  }
+}
+
+void wygenerujGraf (graf_t *g, tablice_t *t) {
 
   srand(time(NULL));
   int aktualnyWierzcholek, sasiad, iloscSasiadow;
   double wagaMinimalna, wagaMaxymalna, waga;
-
-  /*
-  if(p == NULL) {
-    p = stdout;
-  } */
 
   if(g->wagaMax == 0) {
     wagaMaxymalna = 10;
@@ -28,8 +37,6 @@ void wygenerujGraf (graf_t *g, tablice_t *t, FILE *p) {
     wagaMaxymalna = g->wagaMax;
     wagaMinimalna = g->wagaMin;
   }
-
-  fprintf(p,"%d %d\n", g->kolumny, g->wiersze);
 
   g->macierzSasiedztwa = malloc(g->kolumny * g->wiersze * sizeof *g->macierzSasiedztwa);
   for(int i = 0; i < g->kolumny * g->wiersze; i++) {
@@ -43,106 +50,87 @@ void wygenerujGraf (graf_t *g, tablice_t *t, FILE *p) {
     }
   }
 
-  /*t->grafD = malloc(g->kolumny * g->wiersze * sizeof *t->grafD);
-  for(int i = 0; i < g->kolumny * g->wiersze; i++) {
-    t->grafD [i] = malloc(4 * sizeof *t->grafD[i]);
-  }*/
-
-  t->grafBFS = malloc(g->kolumny * g->wiersze * sizeof *t->grafBFS);
-  for(int i = 0; i < g->kolumny * g->wiersze; i++) {
-    t->grafBFS [i] = malloc(g->kolumny * g->wiersze * sizeof *t->grafBFS[i]);
-  }
 
   t->sasiedzi = malloc(g->kolumny * g->wiersze * sizeof *t->sasiedzi);
 
-  
-  for(aktualnyWierzcholek = 0; aktualnyWierzcholek < (g->kolumny * g->wiersze); aktualnyWierzcholek++ ) {
+  iloscSasiadow = 0;
+
+  for(int i = 0; i <= (g->kolumny - 1) * g->wiersze; i = i + g->wiersze) {
+    if(i + g->wiersze >= 0 && i + g->wiersze < g->kolumny * g->wiersze) {
+      waga = losuj(wagaMinimalna, wagaMaxymalna);
+      g->macierzSasiedztwa [i] [i + g->wiersze] = waga;
+      iloscSasiadow++;
+    }
+
+    if(i + 1 >= 0 && i + 1 < g->kolumny * g->wiersze) {
+      waga = losuj(wagaMinimalna, wagaMaxymalna);
+      g->macierzSasiedztwa [i] [i + 1] = waga;
+      iloscSasiadow++;
+    }
+
+    if(i - g->wiersze >= 0 && i - g->wiersze < g->kolumny * g->wiersze) {
+      waga = losuj(wagaMinimalna, wagaMaxymalna);
+      g->macierzSasiedztwa [i] [i - g->wiersze] = waga;
+      iloscSasiadow++;
+    }
+
+    t->sasiedzi [i] = iloscSasiadow;
     iloscSasiadow = 0;
-    t->sasiedzi [aktualnyWierzcholek] = 0;
-
-    sasiad = aktualnyWierzcholek - 1;
-
-    /*printf("Wierzchołek %d ma sąsiadów z wagami:\n\t", aktualnyWierzcholek);*/
-
-    
-    if(sasiad >= 0 && sasiad < g->kolumny * g->wiersze && aktualnyWierzcholek % g->wiersze != 0) {
-      t->sasiedzi [aktualnyWierzcholek] ++;
-
-      t->grafBFS [aktualnyWierzcholek] [iloscSasiadow] = sasiad;
-      iloscSasiadow ++;
-
-      waga = losuj(wagaMinimalna, wagaMaxymalna);
-      //t->F [aktualnyWierzcholek] [0] = waga;
-
-      g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
-
-      /*printf("\tt->grafBFS [%d] [%d] = %d\n", aktualnyWierzcholek, iloscSasiadow, sasiad);*/
-
-      fprintf(p,"%d :%lf   ", sasiad, waga);
-    }
-  
-
-    sasiad = aktualnyWierzcholek + g->wiersze;
-
-    if(sasiad >= 0 && sasiad < g->kolumny * g->wiersze ) {
-      t->sasiedzi [aktualnyWierzcholek] ++;
-
-      t->grafBFS [aktualnyWierzcholek] [iloscSasiadow] = sasiad;
-      iloscSasiadow ++;
-
-      waga = losuj(wagaMinimalna, wagaMaxymalna);
-     // t->grafD [aktualnyWierzcholek] [1] = waga;
-
-      g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
-
-      /*printf("\tt->grafBFS [%d] [%d] = %d\n", aktualnyWierzcholek, iloscSasiadow, sasiad);*/
-
-      fprintf(p,"%d :%lf   ", sasiad, waga);
-    }
-
-
-    sasiad = aktualnyWierzcholek + 1;
-
-    if(sasiad >= 0 && sasiad < g->kolumny * g->wiersze && (aktualnyWierzcholek + 1) % g->wiersze != 0) {
-      t->sasiedzi [aktualnyWierzcholek] ++;
-
-      t->grafBFS [aktualnyWierzcholek] [iloscSasiadow] = sasiad;
-      iloscSasiadow ++;
-
-      waga = losuj(wagaMinimalna, wagaMaxymalna);
-      //t->grafD [aktualnyWierzcholek] [2] = waga;
-
-      g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
-
-      /*printf("\tt->grafBFS [%d] [%d] = %d\n", aktualnyWierzcholek, iloscSasiadow, sasiad);*/
-
-      fprintf(p,"%d :%lf   ", sasiad, waga);
-    }
-
-
-    sasiad = aktualnyWierzcholek - g->wiersze;
-    
-    if(sasiad >= 0 && sasiad < g->kolumny * g->wiersze) {
-      t->sasiedzi [aktualnyWierzcholek] ++;
-
-      t->grafBFS [aktualnyWierzcholek] [iloscSasiadow] = sasiad;
-      iloscSasiadow ++;
-
-      waga = losuj(wagaMinimalna, wagaMaxymalna);
-     // t->grafD [aktualnyWierzcholek] [0] = waga;
-
-      g->macierzSasiedztwa [aktualnyWierzcholek] [sasiad] = waga;
-
-      /*printf("\tt->grafBFS [%d] [%d] = %d\n", aktualnyWierzcholek, iloscSasiadow, sasiad);*/
-
-      fprintf(p,"%d :%lf   ", sasiad, waga);
-    }
-    fprintf(p, "\n");
-
-    /*printf("\n\tIlość sąsiadów %d\n\n", t->sasiedzi[aktualnyWierzcholek-1]);*/
   }
 
-  t->iloscWezlow = aktualnyWierzcholek++;
-  /*if( p != stdout )
-    fclose(p); */
+  for(int i = 2; i < g->wiersze; i++) {
+    for(int j = i - 1; j <= (g->kolumny - 1) * g->wiersze + (i - 1); j = j + g->wiersze) {
+      if(j - 1 >= 0 && j - 1 < g->kolumny * g->wiersze) {
+        waga = losuj(wagaMinimalna, wagaMaxymalna);
+        g->macierzSasiedztwa [j] [j - 1] = waga;
+        iloscSasiadow++;
+      }
+
+      if(j + g->wiersze >= 0 && j + g->wiersze < g->kolumny * g->wiersze) {
+        waga = losuj(wagaMinimalna, wagaMaxymalna);
+        g->macierzSasiedztwa [j] [j + g->wiersze] = waga;
+        iloscSasiadow++;
+      }
+
+      if(j + 1 >= 0 && j + 1 < g->kolumny * g->wiersze) {
+        waga = losuj(wagaMinimalna, wagaMaxymalna);
+        g->macierzSasiedztwa [j] [j + 1] = waga;
+        iloscSasiadow++;
+      }
+
+      if(j - g->wiersze >= 0 && j - g->wiersze < g->kolumny * g->wiersze) {
+        waga = losuj(wagaMinimalna, wagaMaxymalna);
+        g->macierzSasiedztwa [j] [j - g->wiersze] = waga;
+        iloscSasiadow++;
+      }
+
+      t->sasiedzi [j] = iloscSasiadow;
+      iloscSasiadow = 0;
+    }
+  }
+
+
+  for(int i = g->wiersze - 1; i < g->kolumny * g->wiersze; i = i + g->wiersze) {
+    if(i + g->wiersze >= 0 && i + g->wiersze < g->kolumny * g->wiersze) {
+      waga = losuj(wagaMinimalna, wagaMaxymalna);
+      g->macierzSasiedztwa [i] [i + g->wiersze] = waga;
+      iloscSasiadow++;
+    }
+
+    if(i - 1 >= 0 && i - 1 < g->kolumny * g->wiersze) {
+      waga = losuj(wagaMinimalna, wagaMaxymalna);
+      g->macierzSasiedztwa [i] [i - 1] = waga;
+      iloscSasiadow++;
+    }
+
+    if(i - g->wiersze >= 0 && i - g->wiersze < g->kolumny * g->wiersze) {
+      waga = losuj(wagaMinimalna, wagaMaxymalna);
+      g->macierzSasiedztwa [i] [i - g->wiersze] = waga;
+      iloscSasiadow++;
+    }
+
+    t->sasiedzi [i] = iloscSasiadow;
+    iloscSasiadow = 0;
+  }
+  t->iloscWezlow=g->wiersze*g->kolumny;
 }

@@ -124,8 +124,8 @@ void czyszczenieTablic(tablice_t *tablice) {
   /*for(int i = 0; i < tablice->iloscWezlow; i++) {
     free(tablice->grafBFS [i]);
     //free(tablice->grafD [i]);
-  }
-  free(tablice->grafBFS);*/
+  }*/
+  //free(tablice->grafBFS);
   //free(tablice->grafD);
   free(tablice);
 }

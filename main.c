@@ -226,6 +226,11 @@ int main(int argc, char** argv) {
     if(k != NULL) {
       graf->kolumny = atoi(k);
       graf->wiersze = atoi(w);
+
+      if(graf->kolumny == 0 || graf->wiersze == 0) {
+        printf("Podana przez użytkownika liczba kolumn lub wierszy wynosi 0!\nProgram nie może wygenerować grafu o zerowej liczbie kolumn lub wierszy.\nProszę podać inne wymiary grafu.\n");
+        return 1;
+      }
     }
     
     if(graf->kolumny == 0 || graf->wiersze == 0) {
@@ -234,9 +239,11 @@ int main(int argc, char** argv) {
     }
     printf( "Program grafC rozpoczyna generacje grafu o wymiarach %d x %d.\n", graf->kolumny, graf->wiersze);
     if(out!=NULL){
-    wygenerujGraf(graf, tablice, wyjscie);
+    wygenerujGraf(graf, tablice);
+      druk(wyjscie, graf);
       }else{
-      wygenerujGraf(graf, tablice, stdout);
+      wygenerujGraf(graf, tablice);
+      druk(stdout, graf);
       }
     }
 
@@ -298,6 +305,10 @@ int main(int argc, char** argv) {
     }
 
     czyszczenieBFS(output);
+    for(int i = 0; i < ile_elementow; i++) {
+      free(tablice->grafBFS [i]);
+      }
+    free(tablice->grafBFS);
 
   }
 
